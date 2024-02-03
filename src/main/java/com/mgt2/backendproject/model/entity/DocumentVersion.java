@@ -16,19 +16,19 @@ import java.sql.Timestamp;
 @Table(name = "document_version")
 public class DocumentVersion implements Serializable {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_document_version", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    private int id_document_version;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_update", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp last_update;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id_document", nullable = false)
     private Document document;
 }

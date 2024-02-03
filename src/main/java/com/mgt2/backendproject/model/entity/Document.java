@@ -19,9 +19,9 @@ import java.util.Set;
 @Table(name = "document")
 public class Document implements Serializable {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_document", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    private int id_document;
 
     @Column(name = "title", nullable = false, length = 200)
     private String title;
@@ -34,7 +34,7 @@ public class Document implements Serializable {
     private Timestamp creation_date;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
     @ManyToMany(mappedBy = "documents")
