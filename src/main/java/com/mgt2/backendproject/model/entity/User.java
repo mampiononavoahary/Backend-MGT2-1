@@ -14,12 +14,12 @@ import java.util.Set;
 @Getter
 @ToString
 @EqualsAndHashCode
-@Table(name = "user")
+@Table(name = "app_user")
 public class User implements Serializable {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_user", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    private int id_user;
 
     @Column(name = "first_name", nullable = false, length = 200)
     private String first_name;
@@ -36,8 +36,8 @@ public class User implements Serializable {
     @ManyToMany
     @JoinTable(
             name = "collabo",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_document")
     )
     private Set<Document> documents = new HashSet<>();
 }
