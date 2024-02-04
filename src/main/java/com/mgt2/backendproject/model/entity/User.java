@@ -10,8 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Setter
-@Getter
+@Data // ça cmble @Setter & @Getter
 @ToString
 @EqualsAndHashCode
 @Table(name = "app_user")
