@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 public class DocumentController {
 
@@ -29,7 +30,7 @@ public class DocumentController {
         return documentService.getDocumentById(id);
     }
 
-    @PostMapping("/Document")
+    @PostMapping("/Post/Document")
     public Document createDocument(@RequestBody Document document) {
         return documentService.createDocument(document);
     }

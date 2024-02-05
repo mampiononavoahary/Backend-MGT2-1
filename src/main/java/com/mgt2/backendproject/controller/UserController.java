@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 public class UserController {
 
@@ -24,9 +25,14 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping
+    @PostMapping("/User")
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
+    }
+
+    @PostMapping("/Login")
+    public User logUser(@RequestBody User user) {
+        return user;
     }
 
     @PutMapping("/User/update/{id}")
