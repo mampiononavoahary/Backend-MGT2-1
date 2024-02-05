@@ -1,7 +1,6 @@
 package com.mgt2.backendproject.controller;
 
 import com.mgt2.backendproject.model.entity.DocumentVersion;
-import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.service.DocumentVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin // makes it easier for the frontend to receive urls from another server (backend server)
 @RestController
 public class DocumentVersionController {
 
@@ -25,7 +25,7 @@ public class DocumentVersionController {
         return documentVersionService.getDocumentVersionById(id);
     }
 
-    @PostMapping("/Historique")
+    @PostMapping("/Save/Historique")
     public DocumentVersion createDocumentVersion(@RequestBody DocumentVersion documentVersion) {
         return documentVersionService.createDocumentVersion(documentVersion);
     }
