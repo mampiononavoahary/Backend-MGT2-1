@@ -45,4 +45,11 @@ public class UserService {
     public void deleteUserById(Integer id) {
         userRepository.deleteById(id);
     }
+
+    // Methode to valid if user was existing in database
+    public boolean isValidUser(String first_name, String password) {
+        User user = userRepository.findByFirst_name(first_name);
+
+        return user != null && user.getPassword().equals(password);
+    }
 }
