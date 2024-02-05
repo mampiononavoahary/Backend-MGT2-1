@@ -10,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Data // ça cmble @Setter & @Getter
+@Data
 @ToString
 @EqualsAndHashCode
 @Table(name = "app_user")
@@ -31,6 +31,9 @@ public class User implements Serializable {
 
     @Column(name = "password", nullable = false, length = 200)
     private String password;
+
+    @Column(name = "profil",length = 250)
+    private String profil;
 
     @ManyToMany
     @JoinTable(
