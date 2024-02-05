@@ -46,7 +46,7 @@ public class UserController {
         if (userService.isValidUser(username, password)) {
             return new ResponseEntity<>("Authentification with succes", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Name ou password invalid", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Name ou password invalid", HttpStatus.OK);
         }
     }
 
@@ -56,7 +56,7 @@ public class UserController {
             userService.createUser(user);
             return new ResponseEntity<>("User created with success", HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error on creating user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error on creating user", HttpStatus.OK);
         }
     }
 
