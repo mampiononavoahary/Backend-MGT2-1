@@ -50,6 +50,17 @@ public class UserController {
         }
     }
 
+    @PostMapping("/User/signup")
+    public ResponseEntity<String> signUp(@RequestBody User user) {
+        try {
+            userService.createUser(user);
+            return new ResponseEntity<>("User created with success", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error on creating user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @PutMapping("/User/update/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
         return userService.updateUser(id, updatedUser);
