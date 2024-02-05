@@ -48,7 +48,7 @@ public class UserService {
 
     // Methode to valid if user was existing in database
     public boolean isValidUser(String first_name, String password) {
-        User user = userRepository.findByFirst_name(first_name);
+        User user = userRepository.findByFirstName(first_name);
 
         return user != null && user.getPassword().equals(password);
     }
