@@ -12,8 +12,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "document")
 public class Document implements Serializable {
