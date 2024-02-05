@@ -11,8 +11,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Data
-@ToString
-@EqualsAndHashCode
 @Table(name = "app_user")
 public class User implements Serializable {
     @Id

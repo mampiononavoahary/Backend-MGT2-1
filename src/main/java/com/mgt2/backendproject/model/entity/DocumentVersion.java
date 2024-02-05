@@ -9,8 +9,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "document_version")
 public class DocumentVersion implements Serializable {

@@ -1,8 +1,11 @@
 package com.mgt2.backendproject.controller;
 
+import com.mgt2.backendproject.model.entity.LoginRequest;
 import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +36,18 @@ public class UserController {
     @PostMapping("/Login")
     public User logUser(@RequestBody User user) {
         return user;
+    }
+
+    @PostMapping("/Login/valid")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+
+        if (userService.isValidUser(username, password)) {
+            return new ResponseEntity<>("Authentification with succes", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Name ou password invalid", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PutMapping("/User/update/{id}")
