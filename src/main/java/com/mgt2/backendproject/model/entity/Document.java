@@ -3,7 +3,6 @@ package com.mgt2.backendproject.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;

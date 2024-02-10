@@ -1,7 +1,6 @@
 package com.mgt2.backendproject.service;
 
 import com.mgt2.backendproject.model.entity.Document;
-import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +16,17 @@ public class DocumentService {
 
     public List<Document> getAllDocuments() { return documentRepository.findAll(); }
 
+    @SuppressWarnings("null")
     public Optional<Document> getDocumentById(Integer id) {
         return documentRepository.findById(id);
     }
 
+    @SuppressWarnings("null")
     public Document createDocument(Document document) {
         return documentRepository.save(document);
     }
 
+    @SuppressWarnings("null")
     public Document updateDocument(Integer id, Document updatedDocument) {
         Optional<Document> existingDocument = documentRepository.findById(id);
 
@@ -41,6 +43,7 @@ public class DocumentService {
         }
     }
 
+    @SuppressWarnings("null")
     public void deleteDocumentById(Integer id) {
         documentRepository.deleteById(id);
     }
