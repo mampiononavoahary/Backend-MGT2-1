@@ -1,31 +1,52 @@
 package com.mgt2.backendproject.service;
 
+import com.mgt2.backendproject.model.entity.LoginRequest;
+import com.mgt2.backendproject.model.entity.Role;
 import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+
+    public String login(LoginRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(request.getUsername());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (request.getPassword().equals(user.getPassword())) {
+                return jwtService.generateToken(user);
+            }
+        }
+        return null;
+    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
+    @SuppressWarnings("null")
+    public User getUserById(Integer id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        return null;
     }
 
     public User createUser(User user) {
+        user.setRole(Role.USER);
         return userRepository.save(user);
     }
 
+    @SuppressWarnings("null")
     public User updateUser(Integer id, User updatedUser) {
         Optional<User> existingUser = userRepository.findById(id);
 
@@ -42,14 +63,8 @@ public class UserService {
         }
     }
 
+    @SuppressWarnings("null")
     public void deleteUserById(Integer id) {
         userRepository.deleteById(id);
-    }
-
-    // Methode to valid if user was existing in database
-    public boolean isValidUser(String first_name, String password) {
-        User user = userRepository.findByFirstName(first_name);
-
-        return user != null && user.getPassword().equals(password);
     }
 }

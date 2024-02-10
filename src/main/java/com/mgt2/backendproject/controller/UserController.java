@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -24,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/User/{id}")
-    public Optional<User> getUserById(@PathVariable Integer id){
+    public User getUserById(@PathVariable Integer id){
         return userService.getUserById(id);
     }
 
@@ -33,20 +32,13 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PostMapping("/Login")
-    public User logUser(@RequestBody User user) {
-        return user;
-    }
-
-    @PostMapping("/Login/valid")
+    @PostMapping("/User/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-
-        if (userService.isValidUser(username, password)) {
-            return new ResponseEntity<>("Authentification with succes", HttpStatus.OK);
+        String token = userService.login(loginRequest);
+        if (token != null) {
+            return ResponseEntity.ok(token);
         } else {
-            return new ResponseEntity<>("Name ou password invalid", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body("Invalid username or password");
         }
     }
 
@@ -59,7 +51,6 @@ public class UserController {
             return new ResponseEntity<>("Error on creating user", HttpStatus.OK);
         }
     }
-
 
     @PutMapping("/User/update/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
