@@ -5,6 +5,8 @@ import com.mgt2.backendproject.model.entity.Role;
 import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +45,9 @@ public class UserService {
 
     public User createUser(User user) {
         user.setRole(Role.USER);
-        return userRepository.save(user);
+        User save = userRepository.save(user);
+        new InMemoryUserDetailsManager(save);
+        return save;
     }
 
     @SuppressWarnings("null")
