@@ -44,29 +44,30 @@ public class SecurityConfig {
         auth.userDetailsService(customUserDetailsService);
     }
 
-    @Autowired
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, UserRepository userRepository1) {
         this.customUserDetailsService = customUserDetailsService;
         this.userRepository = userRepository1;
     }
 
     @Bean
-    public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
+    SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 (auth) -> auth
                         .requestMatchers("/ping", "/User/login", "/User/signup").permitAll()
                         .anyRequest()
                         .authenticated()
-                )
-                .csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        )
+        .csrf(csrf -> csrf.disable())
+                .sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        
         return http.build();
     }
 
     @Bean
-    public List<InMemoryUserDetailsManager> userDetailsManager() {
+    List<InMemoryUserDetailsManager> userDetailsManager() {
         List<com.mgt2.backendproject.model.entity.User> userList = userRepository.findAll();
         List<InMemoryUserDetailsManager> managers = new ArrayList<>();
         for (com.mgt2.backendproject.model.entity.User user : userList) {
@@ -81,12 +82,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtService, userDetailsService);
     }
 }
