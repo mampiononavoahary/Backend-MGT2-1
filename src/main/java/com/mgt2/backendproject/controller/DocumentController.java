@@ -1,6 +1,7 @@
 package com.mgt2.backendproject.controller;
 
 import com.mgt2.backendproject.model.entity.Document;
+import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,11 @@ public class DocumentController {
     }
 
     @PostMapping("/Document")
-    public ResponseEntity<Document> createDocument(@RequestParam("file") MultipartFile document) {
-        Document createdDocument = documentService.createDocument(document);
+    public ResponseEntity<Document> createDocument(
+        @RequestParam("file") MultipartFile document,
+        @RequestParam("userId") Integer userId
+        ) {
+        Document createdDocument = documentService.createDocument(document, userId);
         return ResponseEntity.ok().body(createdDocument);
     }
 

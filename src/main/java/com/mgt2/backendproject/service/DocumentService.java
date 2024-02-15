@@ -1,6 +1,8 @@
 package com.mgt2.backendproject.service;
 
 import com.mgt2.backendproject.model.entity.Document;
+import com.mgt2.backendproject.model.entity.Role;
+import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,21 +57,44 @@ public class DocumentService {
         return documentRepository.findById(id);
     }
 
-    public Document createDocument(MultipartFile document) {
+    @SuppressWarnings("null")
+    public Document createDocument(MultipartFile document, Integer userId) {
         try {
             Path uploadPath = Paths.get(uploadDirectory);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            String fileName = document.getOriginalFilename();
+            String originalFilename = document.getOriginalFilename();
+            String fileName = originalFilename;
             Path filePath = uploadPath.resolve(fileName);
+
+            int counter = 1;
+            while (Files.exists(filePath)) {
+                String fileNameWithoutExtension = originalFilename;
+                String fileExtension = "";
+                int lastDotIndex = originalFilename.lastIndexOf('.');
+                if (lastDotIndex > 0) {
+                    fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex);
+                    fileExtension = originalFilename.substring(lastDotIndex);
+                }
+                String newFileName = fileNameWithoutExtension + "-" + counter + fileExtension;
+                filePath = uploadPath.resolve(newFileName);
+                fileName = newFileName;
+                counter++;
+            }
+    
             Files.copy(document.getInputStream(), filePath);
+            
+            User user = new User();
+            user.setId_user(userId);
+            user.setRole(Role.USER);
             
             Document doc = new Document();
             doc.setTitle(fileName);
             doc.setContent(filePath.toString());
             doc.setCreation_date(Timestamp.valueOf(LocalDateTime.now()));
+            doc.setUser(user);
             return documentRepository.save(doc);
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors de l'enregistrement du fichier.", e);
