@@ -14,6 +14,11 @@ import java.util.Set;
 @Entity
 @Table(name = "document")
 public class Document implements Serializable {
+    public Document(String filename, String filePath) {
+        this.title = filename;
+        this.content = filePath;
+    }
+
     @Id
     @Column(name = "id_document", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

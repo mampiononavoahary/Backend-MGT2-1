@@ -3,8 +3,11 @@ package com.mgt2.backendproject.controller;
 import com.mgt2.backendproject.model.entity.Document;
 import com.mgt2.backendproject.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +24,7 @@ public class DocumentController {
     }
 
     @GetMapping("/Documents")
-    public List<Document> getAllDocument() {
+    public List<Document> getAllDocument() throws IOException {
         return documentService.getAllDocuments();
     }
 
@@ -30,9 +33,10 @@ public class DocumentController {
         return documentService.getDocumentById(id);
     }
 
-    @PostMapping("/Post/Document")
-    public Document createDocument(@RequestBody Document document) {
-        return documentService.createDocument(document);
+    @PostMapping("/Document")
+    public ResponseEntity<Document> createDocument(@RequestParam("file") MultipartFile document) {
+        Document createdDocument = documentService.createDocument(document);
+        return ResponseEntity.ok().body(createdDocument);
     }
 
     @PutMapping("/Document/update/{id}")
