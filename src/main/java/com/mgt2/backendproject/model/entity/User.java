@@ -83,4 +83,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public User(Integer userId) {
+        this.id_user = userId;
+    }
 }

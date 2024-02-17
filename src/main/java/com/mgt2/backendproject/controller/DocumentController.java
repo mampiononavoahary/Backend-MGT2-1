@@ -1,8 +1,10 @@
 package com.mgt2.backendproject.controller;
 
 import com.mgt2.backendproject.model.entity.Document;
-import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.service.DocumentService;
+
+import jakarta.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +46,17 @@ public class DocumentController {
     }
 
     @PutMapping("/Document/update/{id}")
-    public Document updateDocument(@PathVariable Integer id, @RequestBody Document updateDocument) {
-        return documentService.updateDocument(id, updateDocument);
+    public ResponseEntity<Document> updateDocument(
+        @PathVariable Integer id,
+        @PathParam("file") MultipartFile file,
+        @PathParam("title") String title 
+        ) {
+        try {
+            Document documentUpdate = documentService.updateDocument(id, title, file);
+            return ResponseEntity.ok(documentUpdate);
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'update du fichier.", e);
+        }
     }
 
     @DeleteMapping("/Document/Delete/{id}")

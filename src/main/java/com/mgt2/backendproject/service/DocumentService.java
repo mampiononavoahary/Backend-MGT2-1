@@ -1,14 +1,14 @@
 package com.mgt2.backendproject.service;
 
+import com.mgt2.backendproject.exceptions.DocumentNotFoundException;
 import com.mgt2.backendproject.model.entity.Document;
+import com.mgt2.backendproject.model.entity.DocumentVersion;
 import com.mgt2.backendproject.model.entity.Role;
 import com.mgt2.backendproject.model.entity.User;
 import com.mgt2.backendproject.repository.DocumentRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,10 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -29,27 +27,14 @@ public class DocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
+    @Autowired
+    private DocumentVersionService documentVersionService;
+
     @Value("${spring.servlet.multipart.location}")
     private String uploadDirectory;
 
     public List<Document> getAllDocuments() throws IOException {
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources("file:" + uploadDirectory + "/*");
-
-        List<Document> fileResponses = Arrays.stream(resources)
-                .map(resource -> {
-                    String filename = resource.getFilename();
-                    String filePath;
-                    try {
-                        filePath = resource.getURI().getPath();
-                        return new Document(filename, filePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                })
-                .collect(Collectors.toList());
-        return fileResponses;
+        return documentRepository.findAll();
     }
 
     @SuppressWarnings("null")
@@ -69,7 +54,7 @@ public class DocumentService {
             String fileName = originalFilename;
             Path filePath = uploadPath.resolve(fileName);
 
-            int counter = 1;
+            int counter = 2;
             while (Files.exists(filePath)) {
                 String fileNameWithoutExtension = originalFilename;
                 String fileExtension = "";
@@ -83,7 +68,6 @@ public class DocumentService {
                 fileName = newFileName;
                 counter++;
             }
-    
             Files.copy(document.getInputStream(), filePath);
             
             User user = new User();
@@ -102,19 +86,62 @@ public class DocumentService {
     }
 
     @SuppressWarnings("null")
-    public Document updateDocument(Integer id, Document updatedDocument) {
+    public Document updateDocument(Integer id, String title, MultipartFile file) throws IOException {
         Optional<Document> existingDocument = documentRepository.findById(id);
 
-        if (existingDocument.isPresent()) {
-            Document documentToUpdate = existingDocument.get();
+        Path uploadPath = Paths.get(uploadDirectory);
+        
+        try {
+            if (existingDocument.isPresent()) {
+                Document documentToUpdate = existingDocument.get();
 
-            documentToUpdate.setTitle(updatedDocument.getTitle());
-            documentToUpdate.setContent(updatedDocument.getContent());
-            documentToUpdate.setCreation_date(updatedDocument.getCreation_date());
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
 
-            return documentRepository.save(documentToUpdate);
-        } else {
-            return null;
+                String originalFilename = file.getOriginalFilename();
+                String fileName = originalFilename;
+                Path filePath = uploadPath.resolve(fileName);
+
+                int counter = 2;
+                while (Files.exists(filePath)) {
+                    String fileNameWithoutExtension = originalFilename;
+                    String fileExtension = "";
+                    int lastDotIndex = originalFilename.lastIndexOf('.');
+                    if (lastDotIndex > 0) {
+                        fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex);
+                        fileExtension = originalFilename.substring(lastDotIndex);
+                    }
+                    String newFileName = fileNameWithoutExtension + "-" + counter + fileExtension;
+                    filePath = uploadPath.resolve(newFileName);
+                    fileName = newFileName;
+                    counter++;
+                }
+        
+                Files.copy(file.getInputStream(), filePath);
+                            
+                Timestamp dateTime = Timestamp.valueOf(LocalDateTime.now());
+                
+                documentToUpdate.setTitle(title);
+                documentToUpdate.setContent(filePath.toString());
+                documentToUpdate.setCreation_date(dateTime);
+                User user = documentToUpdate.getUser();
+                user.setRole(Role.USER);
+                documentToUpdate.setUser(user);
+
+                DocumentVersion documentVersion = new DocumentVersion();
+                documentVersion.setDocument(documentToUpdate);
+                documentVersion.setLast_update(dateTime);
+                documentVersion.setUser(documentToUpdate.getUser());
+
+                documentVersionService.createDocumentVersion(documentVersion);
+                
+                return documentRepository.save(documentToUpdate);
+            } else {
+                throw new DocumentNotFoundException("Document not found with id: " + id);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'update du fichier.", e);
         }
     }
 
